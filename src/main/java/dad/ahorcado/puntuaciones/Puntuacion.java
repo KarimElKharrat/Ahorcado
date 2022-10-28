@@ -28,7 +28,10 @@ public class Puntuacion {
 	
 	@Override
 	public String toString() {
-		return nombre + ": " + puntuacion;
+		return nombre + ": 	" + puntuacion;
 	}
 
+	public String toCsvString() {
+		return nombre + ";" + puntuacion + "\n";
+	}
 }

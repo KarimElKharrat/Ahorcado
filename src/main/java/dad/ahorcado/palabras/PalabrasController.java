@@ -62,13 +62,14 @@ public class PalabrasController implements Initializable {
 	@FXML
 	void onNuevoAction(ActionEvent event) {
 
+		// TODO coger del proyecto listas para recoger texto
 		palabras.add("PALABRA");
 
 	}
 
 	@FXML
 	void onQuitarAction(ActionEvent event) {
-
+		// TODO implementar quitar (ver proyecto listas)
 	}
 
 	public final ListProperty<String> palabrasProperty() {

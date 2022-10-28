@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 
 public class PuntuacionesController implements Initializable {
 
@@ -22,7 +23,10 @@ public class PuntuacionesController implements Initializable {
 	// view
 	
 	@FXML
-    private ListView<Puntuacion> view;
+	private ListView<Puntuacion> puntuacionesList;
+
+    @FXML
+    private VBox view;
 	
 	public PuntuacionesController() {
 		try {
@@ -36,11 +40,12 @@ public class PuntuacionesController implements Initializable {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
+		
+		puntuacionesList.itemsProperty().bind(puntuaciones);
 		
 	}
 	
-	public ListView<Puntuacion> getView() {
+	public VBox getView() {
 		return view;
 	}
 
@@ -57,6 +62,5 @@ public class PuntuacionesController implements Initializable {
 	public final void setPuntuaciones(final ObservableList<Puntuacion> puntuaciones) {
 		this.puntuacionesProperty().set(puntuaciones);
 	}
-	
 
 }

@@ -3,7 +3,14 @@
   <groupId>dad</groupId>
   <artifactId>Ahorcado</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-    
+          
+  <properties>
+  	<maven.compiler.target>15</maven.compiler.target><!--version de java-->
+    <maven.compiler.source>15</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <exec.mainClass>dad.ahorcado.Main</exec.mainClass>
+  </properties>
+  
     <dependencies>
 	  <dependency>
 		  <groupId>org.openjfx</groupId>
