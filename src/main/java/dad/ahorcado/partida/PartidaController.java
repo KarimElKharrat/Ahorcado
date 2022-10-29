@@ -2,11 +2,13 @@ package dad.ahorcado.partida;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
+import dad.ahorcado.AhorcadoApp;
 import dad.ahorcado.RootController;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -24,9 +27,7 @@ public class PartidaController implements Initializable {
 	// model
 	
 	private PartidaModel model = new PartidaModel();
-	private ObjectProperty<Image> imagen = new SimpleObjectProperty<Image>();
-	private String palabraElegida = "";
-
+	
 	// view
 	
 	@FXML
@@ -62,7 +63,7 @@ public class PartidaController implements Initializable {
 		letraButton.disableProperty().bind(model.disableButtonsProperty());
 		intentoText.disableProperty().bind(model.disableButtonsProperty());
 		
-		ahorcadoImage.imageProperty().bind(imagen);
+		ahorcadoImage.imageProperty().bind(model.imagenProperty());
 		
 		model.intentoProperty().bindBidirectional(intentoText.textProperty());
 		
@@ -73,10 +74,6 @@ public class PartidaController implements Initializable {
 		
 		// load data
 		
-		model.setNumFile(2);
-		model.setTextoEscondido(esconderPalabra());
-		buildPalabraElegida();
-		
 	}
 	
 	@FXML
@@ -84,9 +81,9 @@ public class PartidaController implements Initializable {
 		String intento = model.getIntento().trim().toUpperCase();
 		if(!intento.isBlank()) {
 			if(model.getLetrasProbadas() == null)
-				comprobarLetra(intento.charAt(0));
+				model.comprobarLetra(intento.charAt(0), this);
 			else if(!model.getLetrasProbadas().contains(intento.charAt(0) + ""))
-				comprobarLetra(intento.charAt(0));
+				model.comprobarLetra(intento.charAt(0), this);
 		}
     }
 
@@ -100,52 +97,39 @@ public class PartidaController implements Initializable {
 		}
     }
     
+    public void cargarDatos() {
+    	model.setNumFile(2);
+		model.setTextoEscondido(model.esconderPalabra());
+		model.buildPalabraElegida();
+    }
 //    ------------------------- logica de negocio -------------------------------------
-    private void buildPalabraElegida() {
-    	int i;
-		for(i = 0; i < RootController.PALABRA_ELEGIDA.length()-1; i++) {
-			palabraElegida += RootController.PALABRA_ELEGIDA.charAt(i) + " ";
-		}
-		palabraElegida += RootController.PALABRA_ELEGIDA.charAt(i);
-    }
     
-    private String esconderPalabra() {
-    	String result = "";
-    	for(int i = 0; i < RootController.PALABRA_ELEGIDA.length()-1; i++) {
-    		if(Character.isLetter(RootController.PALABRA_ELEGIDA.charAt(i))) {
-    			result += "_ ";
-    		} else if(Character.isSpaceChar(RootController.PALABRA_ELEGIDA.charAt(i))) {
-    			result += "  ";
-    		}
-    	}
-    	result += "_ ";
-    	return result;
-    }
+//    private void comprobarLetra(char intento, PartidaController pc) {
+//    	if(model.getPalabraElegida().contains(intento + "")) {
+//			String aux = "";
+//			for(int i = 0; i < model.getPalabraElegida().length(); i++) {
+//				if(model.getPalabraElegida().charAt(i) == intento) {
+//					aux += model.getPalabraElegida().charAt(i);
+//					model.incrementPuntosGanados(1);
+//				} else {
+//					aux += model.getTextoEscondido().charAt(i);
+//				}
+//			}
+//			model.setTextoEscondido(aux);
+//			if(model.getPalabraElegida().equals(model.getTextoEscondido()))
+//				win();
+//		}
+//		else
+//			fail();
+//		model.addLetrasProbadas(Character.toUpperCase(intento) + " ");
+//		model.setIntento("");
+//    }
     
-    private void comprobarLetra(char intento) {
-    	if(palabraElegida.contains(intento + "")) {
-			String aux = "";
-			for(int i = 0; i < palabraElegida.length(); i++) {
-				if(palabraElegida.charAt(i) == intento) {
-					aux += palabraElegida.charAt(i);
-					model.incrementPuntosGanados(1);
-				} else {
-					aux += model.getTextoEscondido().charAt(i);
-				}
-			}
-			model.setTextoEscondido(aux);
-			if(palabraElegida.equals(model.getTextoEscondido()))
-				win();
-		}
-		else
-			fail();
-		model.addLetrasProbadas(Character.toUpperCase(intento) + " ");
-		model.setIntento("");
-    }
+    // ------------------------- logica de negocio -------------------------------
     
     private void fail() {
     	if(getClass().getResource("/images/" + model.getNumFile() + ".png") != null)
-    		imagen.set(new Image(getClass().getResource("/images/" + model.getNumFile() + ".png").toString()));
+    		model.setImagen(new Image(getClass().getResource("/images/" + model.getNumFile() + ".png").toString()));
     	
     	model.incrementNumFile();
     	if(getClass().getResource("/images/" + model.getNumFile() + ".png") == null) {
@@ -156,43 +140,69 @@ public class PartidaController implements Initializable {
     }
     
     private void loose() {
-    	endGame();
-		// TODO popup que diga que has perdido pida tu nombre(ya le pongo yo la puntuacion)
+    	
+    	TextInputDialog dialog = new TextInputDialog();
+		dialog.initOwner(AhorcadoApp.primaryStage);
+		dialog.setTitle("DERROTA");
+		dialog.setHeaderText("Has perdido, danos tu nombre: ");
+		dialog.setContentText("Nombre:");
     	System.out.println("has perdido y tal");
+    	
+    	Optional<String> nombre = dialog.showAndWait();
+    	endGame(nombre);
     }
     
     private void win() {
-    	endGame();
-    	model.setPuntosGanados(puntosPosibles());
-    	model.setTextoEscondido(palabraElegida);
-    	// TODO popup has ganado inserte su nombre(ya le pongo yo la puntuacion)
+    	
+    	model.setPuntosGanados(model.puntosPosibles());
+    	model.setTextoEscondido(model.getPalabraElegida());
+    	
+    	TextInputDialog dialog = new TextInputDialog();
+		dialog.initOwner(AhorcadoApp.primaryStage);
+		dialog.setTitle("VICTORIA");
+		dialog.setHeaderText("Has gando, danos tu nombre: ");
+		dialog.setContentText("Nombre:");
+		
+		Optional<String> nombre = dialog.showAndWait();
+    	
     	System.out.println("has ganado y tal");
+    	endGame(nombre);
     }
     
-    private void endGame() {
+    private void endGame(Optional<String> nombre) {
+    	if(nombre.isPresent() && !nombre.get().isBlank()) {
+    		model.setNombre(nombre.get().trim());
+	    	model.setGameOver(true);
+    	}
     	model.setDisableButtons(true);
     }
     
-    private int puntosPosibles() {
-    	int result = 0;
-    	for(int i = 0; i < RootController.PALABRA_ELEGIDA.length(); i++) {
-    		if(Character.isLetter(RootController.PALABRA_ELEGIDA.toUpperCase().charAt(i))) {
-    			result++;
-    		}
-    	}
-    	return result;
+    protected void modelWin() {
+    	win();
     }
     
-    // ------------------------- logica de negocio -------------------------------
+    protected void modelFail() {
+    	fail();
+    }
     
     public final ObjectProperty<Image> imagenProperty() {
-		return this.imagen;
+		return this.model.imagenProperty();
 	}
 	public final Image getImagen() {
-		return this.imagenProperty().get();
+		return this.model.getImagen();
 	}
 	public final void setImagen(final Image imagen) {
-		this.imagenProperty().set(imagen);
+		this.model.setImagen(imagen);
+	}
+	
+	public BooleanProperty gameOverProperty() {
+		return model.gameOverProperty();
+	}
+	public Integer getPuntosGanados() {
+		return model.getPuntosGanados();
+	}
+	public String getNombre() {
+		return model.getNombre();
 	}
 	
     public BorderPane getView() {

@@ -45,6 +45,11 @@ public class PuntuacionesController implements Initializable {
 		
 	}
 	
+	public void addPuntuacion(String nombre, int puntuacion) {
+		System.out.println(nombre + ":" + puntuacion);
+		puntuaciones.add(new Puntuacion(nombre, puntuacion));
+	}
+	
 	public VBox getView() {
 		return view;
 	}
@@ -52,13 +57,9 @@ public class PuntuacionesController implements Initializable {
 	public final ListProperty<Puntuacion> puntuacionesProperty() {
 		return this.puntuaciones;
 	}
-	
-
 	public final ObservableList<Puntuacion> getPuntuaciones() {
 		return this.puntuacionesProperty().get();
 	}
-	
-
 	public final void setPuntuaciones(final ObservableList<Puntuacion> puntuaciones) {
 		this.puntuacionesProperty().set(puntuaciones);
 	}

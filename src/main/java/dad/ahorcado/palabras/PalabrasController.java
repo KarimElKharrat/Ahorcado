@@ -2,10 +2,14 @@ package dad.ahorcado.palabras;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
+import dad.ahorcado.AhorcadoApp;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 
 public class PalabrasController implements Initializable {
@@ -21,7 +26,8 @@ public class PalabrasController implements Initializable {
 	// model
 
 	private ListProperty<String> palabras = new SimpleListProperty<>(FXCollections.observableArrayList());
-
+	private ObjectProperty<String> selected = new SimpleObjectProperty<>();
+	
 	// view
 
 	@FXML
@@ -52,7 +58,10 @@ public class PalabrasController implements Initializable {
 		// bindings
 
 		palabrasList.itemsProperty().bind(palabras);
+		selected.bind(palabrasList.getSelectionModel().selectedItemProperty());
+		quitarButton.disableProperty().bind(selected.isNull());
 
+		System.out.println(getPalabras().size());
 	}
 
 	public BorderPane getView() {
@@ -62,16 +71,26 @@ public class PalabrasController implements Initializable {
 	@FXML
 	void onNuevoAction(ActionEvent event) {
 
-		// TODO coger del proyecto listas para recoger texto
-		palabras.add("PALABRA");
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.initOwner(AhorcadoApp.primaryStage);
+		dialog.setTitle("Añadir palabra");
+		dialog.setHeaderText("Introduzca una nueva palabra");
+		dialog.setContentText("Palabra:");
+		
+		Optional<String> palabra = dialog.showAndWait();
+		if(palabra.isPresent() && !palabra.get().isBlank() && !palabras.contains(palabra.get().trim())) {
+			palabras.add(palabra.get().trim().toUpperCase());
+		}
 
 	}
 
 	@FXML
 	void onQuitarAction(ActionEvent event) {
-		// TODO implementar quitar (ver proyecto listas)
+		
+		palabras.remove(selected.get());
+		
 	}
-
+	
 	public final ListProperty<String> palabrasProperty() {
 		return this.palabras;
 	}

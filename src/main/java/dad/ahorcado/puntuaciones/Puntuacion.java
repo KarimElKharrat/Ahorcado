@@ -28,7 +28,7 @@ public class Puntuacion {
 	
 	@Override
 	public String toString() {
-		return nombre + ": 	" + puntuacion;
+		return nombre + " ha conseguido " + puntuacion + " puntos";
 	}
 
 	public String toCsvString() {

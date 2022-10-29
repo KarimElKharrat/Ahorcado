@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import dad.ahorcado.puntuaciones.Puntuacion;
@@ -37,6 +36,8 @@ public class AhorcadoApp extends Application {
 					)
 			);
 		}
+		
+		rootController.setPalabraElegida();
 		
 		if (PUNTUACIONES_FILE.exists()) {
 			rootController.getPuntuaciones().addAll(
