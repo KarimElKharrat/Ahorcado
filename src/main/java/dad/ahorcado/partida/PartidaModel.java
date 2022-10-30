@@ -1,5 +1,8 @@
 package dad.ahorcado.partida;
 
+import java.util.Optional;
+
+import dad.ahorcado.AhorcadoApp;
 import dad.ahorcado.RootController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -9,6 +12,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 
 public class PartidaModel {
@@ -16,15 +20,22 @@ public class PartidaModel {
 	private StringProperty intento = new SimpleStringProperty();
 	private StringProperty letrasProbadas = new SimpleStringProperty();
 	private StringProperty textoEscondido = new SimpleStringProperty();
+	
 	private IntegerProperty puntosGanados = new SimpleIntegerProperty();
-	private IntegerProperty puntosPerdidos = new SimpleIntegerProperty();
+	
 	private BooleanProperty disableButtons = new SimpleBooleanProperty(false);
 	private BooleanProperty gameOver = new SimpleBooleanProperty();
+	
 	private ObjectProperty<Image> imagen = new SimpleObjectProperty<Image>();
+	
 	private String nombre;
 	private String palabraElegida = "";
+	
 	private int numFile;
 	
+	/**
+	 * meto la palabra elegida en el modelo
+	 */
 	public void buildPalabraElegida() {
     	int i;
 		for(i = 0; i < RootController.PALABRA_ELEGIDA.length()-1; i++) {
@@ -33,7 +44,11 @@ public class PartidaModel {
 		addPalabraElegida(RootController.PALABRA_ELEGIDA.charAt(i) + "");
     }
 	
-	public String esconderPalabra() {
+	/**
+	 * escondo la palabra y la guardo en el modelo
+	 * @return palabra escondida
+	 */
+	protected String esconderPalabra() {
     	String result = "";
     	for(int i = 0; i < RootController.PALABRA_ELEGIDA.length()-1; i++) {
     		if(Character.isLetter(RootController.PALABRA_ELEGIDA.charAt(i))) {
@@ -46,7 +61,10 @@ public class PartidaModel {
     	return result;
     }
 	
-	public int puntosPosibles() {
+	/**
+	 * @return cantidad de puntos máximos posibles
+	 */
+	private int puntosPosibles() {
     	int result = 0;
     	for(int i = 0; i < RootController.PALABRA_ELEGIDA.length(); i++) {
     		if(Character.isLetter(RootController.PALABRA_ELEGIDA.toUpperCase().charAt(i))) {
@@ -56,7 +74,12 @@ public class PartidaModel {
     	return result;
     }
 	
-	public void comprobarLetra(char intento, PartidaController pc) {
+	/**
+	 * compruebo si la letra está en la palabra elegida o no
+	 * @param intento
+	 * @param pc (PartidaController)
+	 */
+	protected void comprobarLetra(char intento) {
 		if(getPalabraElegida().contains(intento + "")) {
 			String aux = "";
 			for(int i = 0; i < getPalabraElegida().length(); i++) {
@@ -69,15 +92,72 @@ public class PartidaModel {
 			}
 			setTextoEscondido(aux);
 			if(getPalabraElegida().equals(getTextoEscondido()))
-				pc.modelWin();
+				win();
 		}
 		else
-			pc.modelFail();
+			fail();
 		addLetrasProbadas(Character.toUpperCase(intento) + " ");
 		setIntento("");
 	}
 	
-	
+	/**
+	 * cuando falla modifica la imagen e incrementa los puntos perdidos
+	 */
+    protected void fail() {
+    	if(getClass().getResource("/images/" + getNumFile() + ".png") != null)
+    		setImagen(new Image(getClass().getResource("/images/" + getNumFile() + ".png").toString()));
+    	
+    	incrementNumFile();
+    	if(getClass().getResource("/images/" + getNumFile() + ".png") == null) {
+    		loose();
+    	}
+    	
+    }
+    
+    /**
+     * cuando pierde establece los puntos, muestra la palabra, salta una pantalla y te dirige a endGame() 
+     */
+    private void loose() {
+    	
+    	TextInputDialog dialog = new TextInputDialog();
+		dialog.initOwner(AhorcadoApp.primaryStage);
+		dialog.setTitle("DERROTA");
+		dialog.setHeaderText("Has perdido, danos tu nombre: ");
+		dialog.setContentText("Nombre:");
+    	
+    	Optional<String> nombre = dialog.showAndWait();
+    	endGame(nombre);
+    }
+    
+    /**
+     * cuando gana establece los puntos, muestra la palabra, salta una pantalla y te dirige a endGame() 
+     */
+    protected void win() {
+    	
+    	setPuntosGanados(puntosPosibles());
+    	setTextoEscondido(getPalabraElegida());
+    	
+    	TextInputDialog dialog = new TextInputDialog();
+		dialog.initOwner(AhorcadoApp.primaryStage);
+		dialog.setTitle("VICTORIA");
+		dialog.setHeaderText("Has gando, danos tu nombre: ");
+		dialog.setContentText("Nombre:");
+		
+		Optional<String> nombre = dialog.showAndWait();
+    	endGame(nombre);
+    }
+    
+    /**
+     * cuando acaba la partida pregunto por el nombre del jugador (para meterlo en la pestaña puntuaciones)
+     * @param nombre
+     */
+    private void endGame(Optional<String> nombre) {
+    	if(nombre.isPresent() && !nombre.get().isBlank()) {
+    		setNombre(nombre.get().trim());
+	    	setGameOver(true);
+    	}
+    	setDisableButtons(true);
+    }
 	
 	public final StringProperty intentoProperty() {
 		return this.intento;
@@ -123,19 +203,6 @@ public class PartidaModel {
 	}
 	public final void incrementPuntosGanados(int puntos) {
 		setPuntosGanados(getPuntosGanados() + puntos);
-	}
-	
-	public final IntegerProperty puntosPerdidosProperty() {
-		return this.puntosPerdidos;
-	}
-	public final int getPuntosPerdidos() {
-		return this.puntosPerdidosProperty().get();
-	}
-	public final void setPuntosPerdidos(final int puntosPerdidos) {
-		this.puntosPerdidosProperty().set(puntosPerdidos);
-	}
-	public final void incrementPuntosPerdidos() {
-		setPuntosPerdidos(getPuntosPerdidos() - 1);
 	}
 	
 	public final BooleanProperty disableButtonsProperty() {

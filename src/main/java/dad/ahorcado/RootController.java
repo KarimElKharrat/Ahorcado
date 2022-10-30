@@ -57,6 +57,8 @@ public class RootController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		// tab content
+		
 		palabrasTab.setContent(palabrasController.getView());
 		partidaTab.setContent(partidaController.getView());
 		puntuacionesTab.setContent(puntuacionesController.getView());
@@ -76,22 +78,14 @@ public class RootController implements Initializable {
 				puntuacionesController.addPuntuacion(nombre, puntuacion);
 			}
 		});
-		
-		
 	}
 	
-	public TabPane getView() {
-		return view;
-	}
-	
-	public PalabrasController getPalabrasController() {
-		return palabrasController;
-	}
-	
+	/**
+	 * elige la palabra para comenzar el juego
+	 */
 	public void setPalabraElegida() {
 		int random =(int) (Math.random() * palabras.getSize());
 		RootController.PALABRA_ELEGIDA = palabras.get(random);
-//		System.out.println(random + RootController.PALABRA_ELEGIDA);
 		partidaController.cargarDatos();
 	}
 	
@@ -130,6 +124,10 @@ public class RootController implements Initializable {
 	}
 	public final void setImagen(final Image imagen) {
 		this.imagenProperty().set(imagen);
+	}
+	
+	public TabPane getView() {
+		return view;
 	}
 
 }

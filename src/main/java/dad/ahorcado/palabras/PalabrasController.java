@@ -63,10 +63,6 @@ public class PalabrasController implements Initializable {
 
 	}
 
-	public BorderPane getView() {
-		return view;
-	}
-
 	@FXML
 	void onNuevoAction(ActionEvent event) {
 
@@ -100,6 +96,10 @@ public class PalabrasController implements Initializable {
 
 	public final void setPalabras(final ObservableList<String> palabras) {
 		this.palabrasProperty().set(palabras);
+	}
+
+	public BorderPane getView() {
+		return view;
 	}
 
 }

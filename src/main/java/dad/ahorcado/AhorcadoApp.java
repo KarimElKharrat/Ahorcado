@@ -30,15 +30,17 @@ public class AhorcadoApp extends Application {
 		// cargar las palabras desde fichero
 		if (PALABRAS_FILE.exists()) {
 			rootController.getPalabras().addAll(
-					Files.readAllLines(
-							PALABRAS_FILE.toPath(), 
-							StandardCharsets.UTF_8
-					)
+				Files.readAllLines(
+					PALABRAS_FILE.toPath(), 
+					StandardCharsets.UTF_8
+				)
 			);
 		}
 		
+		// una vez cargadas las palabras eligo la palabra para el juego
 		rootController.setPalabraElegida();
 		
+		// cargar puntuaciones desde fichero
 		if (PUNTUACIONES_FILE.exists()) {
 			rootController.getPuntuaciones().addAll(
 				Files.readAllLines(
@@ -56,6 +58,7 @@ public class AhorcadoApp extends Application {
 			);
 		}
 		
+		// cargar imagen
 		if(getClass().getResource("/images/1.png") != null)
     		rootController.setImagen(new Image(getClass().getResource("/images/1.png").toString()));
 	}
@@ -85,6 +88,7 @@ public class AhorcadoApp extends Application {
 				StandardOpenOption.TRUNCATE_EXISTING
 		);
 		
+		// guardar puntuaciones en un fichero
 		String contenidoPuntuaciones = "";
 		for(Puntuacion puntuacion:rootController.getPuntuaciones()) {
 			contenidoPuntuaciones += puntuacion.toCsvString();

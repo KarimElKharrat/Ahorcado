@@ -6,10 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -50,30 +47,21 @@
          </padding>
       </HBox>
    </bottom>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
    <right>
-      <GridPane alignment="TOP_RIGHT" hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-color: black;" vgap="5.0" BorderPane.alignment="TOP_RIGHT">
-        <columnConstraints>
-          <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
-          <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="ALWAYS" />
-          <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" style="-fx-border-color: black;" BorderPane.alignment="TOP_RIGHT">
          <children>
-            <Label minHeight="-Infinity" minWidth="-Infinity" text="Puntos:  " GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-            <Label fx:id="puntosGanadosLabel" minWidth="-Infinity" text="x" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-            <Label fx:id="puntosPerdidosLabel" minWidth="-Infinity" text="y" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Label minHeight="-Infinity" minWidth="-Infinity" text="Puntos:  " />
+            <Label fx:id="puntosGanadosLabel" minWidth="-Infinity" text="x" />
          </children>
          <BorderPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            <Insets />
          </BorderPane.margin>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
-      </GridPane>
+      </VBox>
    </right>
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
 </BorderPane>
