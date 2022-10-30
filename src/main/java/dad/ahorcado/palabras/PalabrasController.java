@@ -61,7 +61,6 @@ public class PalabrasController implements Initializable {
 		selected.bind(palabrasList.getSelectionModel().selectedItemProperty());
 		quitarButton.disableProperty().bind(selected.isNull());
 
-		System.out.println(getPalabras().size());
 	}
 
 	public BorderPane getView() {

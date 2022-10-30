@@ -1,6 +1,6 @@
 package dad.ahorcado.puntuaciones;
 
-public class Puntuacion {
+public class Puntuacion implements Comparable<Puntuacion> {
 
 	private String nombre;
 	private int puntuacion;
@@ -33,5 +33,10 @@ public class Puntuacion {
 
 	public String toCsvString() {
 		return nombre + ";" + puntuacion + "\n";
+	}
+
+	@Override
+	public int compareTo(Puntuacion o) {
+		return o.getPuntuacion() - this.getPuntuacion();
 	}
 }

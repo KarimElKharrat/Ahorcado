@@ -146,7 +146,6 @@ public class PartidaController implements Initializable {
 		dialog.setTitle("DERROTA");
 		dialog.setHeaderText("Has perdido, danos tu nombre: ");
 		dialog.setContentText("Nombre:");
-    	System.out.println("has perdido y tal");
     	
     	Optional<String> nombre = dialog.showAndWait();
     	endGame(nombre);
@@ -164,8 +163,6 @@ public class PartidaController implements Initializable {
 		dialog.setContentText("Nombre:");
 		
 		Optional<String> nombre = dialog.showAndWait();
-    	
-    	System.out.println("has ganado y tal");
     	endGame(nombre);
     }
     

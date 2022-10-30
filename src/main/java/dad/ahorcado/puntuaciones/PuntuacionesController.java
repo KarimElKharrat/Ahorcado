@@ -19,6 +19,7 @@ public class PuntuacionesController implements Initializable {
 	// model
 	
 	private ListProperty<Puntuacion> puntuaciones = new SimpleListProperty<>(FXCollections.observableArrayList());
+	private ListProperty<Puntuacion> puntuacionesSorted = new SimpleListProperty<>(puntuaciones.sorted());
 	
 	// view
 	
@@ -41,7 +42,7 @@ public class PuntuacionesController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-		puntuacionesList.itemsProperty().bind(puntuaciones);
+		puntuacionesList.itemsProperty().bind(puntuacionesSorted);
 		
 	}
 	
