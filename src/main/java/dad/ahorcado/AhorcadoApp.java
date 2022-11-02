@@ -8,15 +8,20 @@ import java.util.stream.Collectors;
 
 import dad.ahorcado.puntuaciones.Puntuacion;
 import javafx.application.Application;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class AhorcadoApp extends Application {
 	
-	private static final File PALABRAS_FILE = new File("src/main/resources/data_files/palabras.txt");
-	private static final File PUNTUACIONES_FILE = new File("src/main/resources/data_files/puntuaciones.csv");
+	private static final File PALABRAS_FILE = new File("data_files/palabras.txt");
+	private static final File PUNTUACIONES_FILE = new File("data_files/puntuaciones.csv");
 
+	private ListProperty<String> palabras = new SimpleListProperty<>(FXCollections.observableArrayList());
+	private ListProperty<Puntuacion> puntuaciones = new SimpleListProperty<>(FXCollections.observableArrayList());
+	
 	public static Stage primaryStage;
 	
 	private RootController rootController;
@@ -25,11 +30,9 @@ public class AhorcadoApp extends Application {
 	public void init() throws Exception {
 		System.out.println("inicializando...");
 
-		rootController = new RootController();
-		
 		// cargar las palabras desde fichero
 		if (PALABRAS_FILE.exists()) {
-			rootController.getPalabras().addAll(
+			palabras.addAll(
 				Files.readAllLines(
 					PALABRAS_FILE.toPath(), 
 					StandardCharsets.UTF_8
@@ -37,12 +40,9 @@ public class AhorcadoApp extends Application {
 			);
 		}
 		
-		// una vez cargadas las palabras eligo la palabra para el juego
-		rootController.setPalabraElegida();
-		
 		// cargar puntuaciones desde fichero
 		if (PUNTUACIONES_FILE.exists()) {
-			rootController.getPuntuaciones().addAll(
+			puntuaciones.addAll(
 				Files.readAllLines(
 					PUNTUACIONES_FILE.toPath(), 
 					StandardCharsets.UTF_8
@@ -58,9 +58,14 @@ public class AhorcadoApp extends Application {
 			);
 		}
 		
-		// cargar imagen
-		if(getClass().getResource("/images/1.png") != null)
-    		rootController.setImagen(new Image(getClass().getResource("/images/1.png").toString()));
+		rootController = new RootController();
+		
+		rootController.palabrasProperty().bind(palabras);
+		rootController.puntuacionesProperty().bind(puntuaciones);
+		
+		rootController.cargarDatos();
+		// una vez cargadas las palabras eligo la palabra para el juego
+//		rootController.setPalabraElegida();
 	}
 	
 	@Override
@@ -105,5 +110,5 @@ public class AhorcadoApp extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
-
+	
 }

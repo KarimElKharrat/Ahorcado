@@ -9,9 +9,7 @@ import dad.ahorcado.partida.PartidaController;
 import dad.ahorcado.puntuaciones.Puntuacion;
 import dad.ahorcado.puntuaciones.PuntuacionesController;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,7 +17,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.image.Image;
 
 public class RootController implements Initializable {
 	
@@ -31,10 +28,10 @@ public class RootController implements Initializable {
 
 	// model
 	
-	public static String PALABRA_ELEGIDA;
+	// TODO quitar palabra elegida y metrlo en palabras controller
+//	public static String PALABRA_ELEGIDA;
 	private ListProperty<String> palabras = new SimpleListProperty<>(FXCollections.observableArrayList());
 	private ListProperty<Puntuacion> puntuaciones = new SimpleListProperty<>(FXCollections.observableArrayList());
-	private ObjectProperty<Image> imagen = new SimpleObjectProperty<Image>();
 	
 	// view
 	
@@ -66,8 +63,8 @@ public class RootController implements Initializable {
 		// bindings
 		
 		palabrasController.palabrasProperty().bind(palabras);
+		partidaController.palabrasProperty().bind(palabras);
 		puntuacionesController.puntuacionesProperty().bind(puntuaciones);
-		partidaController.imagenProperty().bindBidirectional(imagen);
 		
 		// listeners
 		
@@ -83,9 +80,14 @@ public class RootController implements Initializable {
 	/**
 	 * elige la palabra para comenzar el juego
 	 */
-	public void setPalabraElegida() {
-		int random =(int) (Math.random() * palabras.getSize());
-		RootController.PALABRA_ELEGIDA = palabras.get(random);
+//	public void setPalabraElegida() {
+//		int random =(int) (Math.random() * palabras.getSize());
+//		RootController.PALABRA_ELEGIDA = palabras.get(random);
+//	}
+	
+	// partida
+	
+	public void cargarDatos() {
 		partidaController.cargarDatos();
 	}
 	
@@ -112,18 +114,6 @@ public class RootController implements Initializable {
 	}
 	public final void setPuntuaciones(final ObservableList<Puntuacion> puntuaciones) {
 		this.puntuacionesProperty().set(puntuaciones);
-	}
-
-	// partida
-	
-	public final ObjectProperty<Image> imagenProperty() {
-		return this.imagen;
-	}
-	public final Image getImagen() {
-		return this.imagenProperty().get();
-	}
-	public final void setImagen(final Image imagen) {
-		this.imagenProperty().set(imagen);
 	}
 	
 	public TabPane getView() {

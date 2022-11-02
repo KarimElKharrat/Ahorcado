@@ -3,25 +3,31 @@ package dad.ahorcado.partida;
 import java.util.Optional;
 
 import dad.ahorcado.AhorcadoApp;
-import dad.ahorcado.RootController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 
 public class PartidaModel {
+	
+	private ListProperty<String> palabras = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 	private StringProperty intento = new SimpleStringProperty();
 	private StringProperty letrasProbadas = new SimpleStringProperty();
-	private StringProperty textoEscondido = new SimpleStringProperty();
+	private StringProperty palabraElegidaEscondida = new SimpleStringProperty("");
 	
 	private IntegerProperty puntosGanados = new SimpleIntegerProperty();
+	private IntegerProperty puntosRestantes = new SimpleIntegerProperty();
 	
 	private BooleanProperty disableButtons = new SimpleBooleanProperty(false);
 	private BooleanProperty gameOver = new SimpleBooleanProperty();
@@ -29,19 +35,40 @@ public class PartidaModel {
 	private ObjectProperty<Image> imagen = new SimpleObjectProperty<Image>();
 	
 	private String nombre;
-	private String palabraElegida = "";
+	private String palabraElegidaBasica;
+	private StringProperty palabraElegida = new SimpleStringProperty("");
 	
 	private int numFile;
+	
+	
+	public void setPalabraElegidaBasica() {
+		int random =(int) (Math.random() * palabras.getSize());
+		palabraElegidaBasica = palabras.get(random);
+		System.out.println(palabraElegidaBasica);
+	}
+	
+	/**
+     * me preparo para meter la siguiente imagen, escondo la palabra y la meto en el modelo
+     */
+    public void cargarDatos() {
+    	setNumFile(1);
+    	fail();
+    	setPalabraElegidaBasica();
+		setPalabraElegidaEscondida(esconderPalabra());
+		setPuntosRestantes(puntosPosibles());
+		buildPalabraElegida();
+		setLetrasProbadas("");
+    }
 	
 	/**
 	 * meto la palabra elegida en el modelo
 	 */
 	public void buildPalabraElegida() {
     	int i;
-		for(i = 0; i < RootController.PALABRA_ELEGIDA.length()-1; i++) {
-			addPalabraElegida(RootController.PALABRA_ELEGIDA.charAt(i) + " ");
+		for(i = 0; i < getPalabraElegidaBasica().length()-1; i++) {
+			addPalabraElegida(getPalabraElegidaBasica().charAt(i) + " ");
 		}
-		addPalabraElegida(RootController.PALABRA_ELEGIDA.charAt(i) + "");
+		addPalabraElegida(getPalabraElegidaBasica().charAt(i) + "");
     }
 	
 	/**
@@ -50,10 +77,10 @@ public class PartidaModel {
 	 */
 	protected String esconderPalabra() {
     	String result = "";
-    	for(int i = 0; i < RootController.PALABRA_ELEGIDA.length()-1; i++) {
-    		if(Character.isLetter(RootController.PALABRA_ELEGIDA.charAt(i))) {
+    	for(int i = 0; i < getPalabraElegidaBasica().length()-1; i++) {
+    		if(Character.isLetter(getPalabraElegidaBasica().charAt(i))) {
     			result += "_ ";
-    		} else if(Character.isSpaceChar(RootController.PALABRA_ELEGIDA.charAt(i))) {
+    		} else if(Character.isSpaceChar(getPalabraElegidaBasica().charAt(i))) {
     			result += "  ";
     		}
     	}
@@ -66,8 +93,8 @@ public class PartidaModel {
 	 */
 	private int puntosPosibles() {
     	int result = 0;
-    	for(int i = 0; i < RootController.PALABRA_ELEGIDA.length(); i++) {
-    		if(Character.isLetter(RootController.PALABRA_ELEGIDA.toUpperCase().charAt(i))) {
+    	for(int i = 0; i < getPalabraElegidaBasica().length(); i++) {
+    		if(Character.isLetter(getPalabraElegidaBasica().toUpperCase().charAt(i))) {
     			result++;
     		}
     	}
@@ -86,22 +113,26 @@ public class PartidaModel {
 				if(getPalabraElegida().charAt(i) == intento) {
 					aux += getPalabraElegida().charAt(i);
 					incrementPuntosGanados(1);
+					decrementarPuntosRestantes(1);
 				} else {
-					aux += getTextoEscondido().charAt(i);
+					aux += getPalabraElegidaEscondida().charAt(i);
 				}
 			}
-			setTextoEscondido(aux);
-			if(getPalabraElegida().equals(getTextoEscondido()))
+			setPalabraElegidaEscondida(aux);
+			if(getPalabraElegida().equals(getPalabraElegidaEscondida())) {
+				addLetrasProbadas(Character.toUpperCase(intento) + " ");
 				win();
+			}
 		}
-		else
+		else {
+			addLetrasProbadas(Character.toUpperCase(intento) + " ");
 			fail();
-		addLetrasProbadas(Character.toUpperCase(intento) + " ");
-		setIntento("");
+		}
+		
 	}
 	
 	/**
-	 * cuando falla modifica la imagen e incrementa los puntos perdidos
+	 * cuando falla modifica la imagen
 	 */
     protected void fail() {
     	if(getClass().getResource("/images/" + getNumFile() + ".png") != null)
@@ -134,17 +165,21 @@ public class PartidaModel {
      */
     protected void win() {
     	
-    	setPuntosGanados(puntosPosibles());
-    	setTextoEscondido(getPalabraElegida());
+    	setPuntosGanados(getPuntosGanados() + getPuntosRestantes());
+    	setPalabraElegidaEscondida("");
+    	setPalabraElegida("");
+    	palabraElegidaBasica = "";
     	
-    	TextInputDialog dialog = new TextInputDialog();
-		dialog.initOwner(AhorcadoApp.primaryStage);
-		dialog.setTitle("VICTORIA");
-		dialog.setHeaderText("Has gando, danos tu nombre: ");
-		dialog.setContentText("Nombre:");
-		
-		Optional<String> nombre = dialog.showAndWait();
-    	endGame(nombre);
+    	cargarDatos();
+    	
+//    	TextInputDialog dialog = new TextInputDialog();
+//		dialog.initOwner(AhorcadoApp.primaryStage);
+//		dialog.setTitle("VICTORIA");
+//		dialog.setHeaderText("Has gando, danos tu nombre: ");
+//		dialog.setContentText("Nombre:");
+//		
+//		Optional<String> nombre = dialog.showAndWait();
+//    	endGame(nombre);
     }
     
     /**
@@ -180,16 +215,6 @@ public class PartidaModel {
 	}
 	public final void addLetrasProbadas(final String letrasProbadas) {
 		letrasProbadasProperty().set(getLetrasProbadas() != null ? getLetrasProbadas() + letrasProbadas:letrasProbadas);
-	}
-	
-	public final StringProperty textoEscondidoProperty() {
-		return this.textoEscondido;
-	}
-	public final String getTextoEscondido() {
-		return this.textoEscondidoProperty().get();
-	}
-	public final void setTextoEscondido(final String textoEscondido) {
-		this.textoEscondidoProperty().set(textoEscondido);
 	}
 	
 	public final IntegerProperty puntosGanadosProperty() {
@@ -251,14 +276,64 @@ public class PartidaModel {
 		this.nombre = nombre;
 	}
 	
-	public String getPalabraElegida() {
-		return palabraElegida;
+	// palabra elegida escondida
+	
+	public final StringProperty palabraElegidaEscondidaProperty() {
+		return this.palabraElegidaEscondida;
 	}
-	public void setPalabraElegida(String palabraElegida) {
-		this.palabraElegida = palabraElegida;
+	public final String getPalabraElegidaEscondida() {
+		return this.palabraElegidaEscondidaProperty().get();
 	}
-	public void addPalabraElegida(String s) {
-		this.palabraElegida += s;
+	public final void setPalabraElegidaEscondida(final String palabraElegidaEscondida) {
+		this.palabraElegidaEscondidaProperty().set(palabraElegidaEscondida);
 	}
-		
+	
+	// palabra elegida
+
+	public final StringProperty palabraElegidaProperty() {
+		return this.palabraElegida;
+	}
+	public final String getPalabraElegida() {
+		return this.palabraElegidaProperty().get();
+	}
+	public final void setPalabraElegida(final String palabraElegida) {
+		this.palabraElegidaProperty().set(palabraElegida);
+	}
+	public final void addPalabraElegida(final String c) {
+		setPalabraElegida(getPalabraElegida() + c);
+	}
+	
+	// palabras list
+
+	public final ListProperty<String> palabrasProperty() {
+		return this.palabras;
+	}
+	public final ObservableList<String> getPalabras() {
+		return this.palabrasProperty().get();
+	}
+	public final void setPalabras(final ObservableList<String> palabras) {
+		this.palabrasProperty().set(palabras);
+	}
+	
+	// palabra elegida básica
+	
+	public String getPalabraElegidaBasica() {
+		return palabraElegidaBasica;
+	}
+
+	// puntos restantes
+	
+	public final IntegerProperty puntosRestantesProperty() {
+		return this.puntosRestantes;
+	}
+	public final int getPuntosRestantes() {
+		return this.puntosRestantesProperty().get();
+	}
+	public final void setPuntosRestantes(final int puntosRestantes) {
+		this.puntosRestantesProperty().set(puntosRestantes);
+	}
+	public void decrementarPuntosRestantes(int decremento) {
+		setPuntosRestantes(getPuntosRestantes() - decremento);
+	}
+	
 }
