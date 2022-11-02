@@ -44,7 +44,7 @@ public class PartidaModel {
 	public void setPalabraElegidaBasica() {
 		int random =(int) (Math.random() * palabras.getSize());
 		palabraElegidaBasica = palabras.get(random);
-		System.out.println(palabraElegidaBasica);
+//		System.out.println(palabraElegidaBasica);
 	}
 	
 	/**
