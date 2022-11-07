@@ -110,6 +110,7 @@ public class PartidaController implements Initializable {
 	
 	public void cargarDatos() {
 		model.cargarDatos();
+		model.setNumFile(2);
 	}
 	
 	// palabras list

@@ -51,8 +51,7 @@ public class PartidaModel {
      * me preparo para meter la siguiente imagen, escondo la palabra y la meto en el modelo
      */
     public void cargarDatos() {
-    	setNumFile(1);
-    	fail();
+    	
     	setPalabraElegidaBasica();
 		setPalabraElegidaEscondida(esconderPalabra());
 		setPuntosRestantes(puntosPosibles());
