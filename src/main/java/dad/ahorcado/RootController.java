@@ -28,7 +28,6 @@ public class RootController implements Initializable {
 
 	// model
 	
-	// TODO quitar palabra elegida y metrlo en palabras controller
 //	public static String PALABRA_ELEGIDA;
 	private ListProperty<String> palabras = new SimpleListProperty<>(FXCollections.observableArrayList());
 	private ListProperty<Puntuacion> puntuaciones = new SimpleListProperty<>(FXCollections.observableArrayList());

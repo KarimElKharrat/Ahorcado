@@ -24,7 +24,7 @@ public class PuntuacionesController implements Initializable {
 	// view
 	
 	@FXML
-	private ListView<Puntuacion> puntuacionesList; // TODO cambiar a TableView
+	private ListView<Puntuacion> puntuacionesList;
 
     @FXML
     private VBox view;
